@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSignalR.Mvc", "SampleSignalR.Mvc\SampleSignalR.Mvc.csproj", "{69F8C0B0-FAC8-47C0-9B5A-70D307A5BC18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleSignalIR.Service", "SampleSignalIR.Service\SampleSignalIR.Service.csproj", "{3744BC9E-EDED-48B3-B13D-07778C8650D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSignalR.Service", "SampleSignalIR.Service\SampleSignalR.Service.csproj", "{3744BC9E-EDED-48B3-B13D-07778C8650D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleSignalR.ConsoleClient", "SampleSignalR.ConsoleClient\SampleSignalR.ConsoleClient.csproj", "{9BA3BDB3-6549-431C-9739-E48DD1B69ACA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSignalR.ConsoleClient", "SampleSignalR.ConsoleClient\SampleSignalR.ConsoleClient.csproj", "{9BA3BDB3-6549-431C-9739-E48DD1B69ACA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

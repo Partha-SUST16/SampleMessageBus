@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using MassTransit;
 using MassTransit.SignalR.Contracts;
 using MassTransit.SignalR.Utils;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Protocol;
-using SampleSignalR.Mvc.Hubs;
 
-namespace SampleSignalIR.Service
+namespace SampleSignalR.Service
 {
     static class Program
     {
@@ -40,12 +40,6 @@ namespace SampleSignalIR.Service
             await busControl.StopAsync();
         }
     }
-}
-
-namespace SampleSignalR.Mvc.Hubs
-{
-    using Microsoft.AspNetCore.SignalR;
-
 
     public class ChatHub : Hub
     {
