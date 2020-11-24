@@ -11,7 +11,7 @@ namespace RabbitMq.OneWayMessage.Receiver
         private static IModel channelForEventing;
         static void Main(string[] args)
         {
-            ReceiveMessagesWithEvents();
+            ReceiveFanoutMessages();
         }
         private static void ReceiveSingleOneWayMessage()
         {
@@ -58,6 +58,37 @@ namespace RabbitMq.OneWayMessage.Receiver
             Debug.WriteLine(string.Concat("Delivery tag: ", e.DeliveryTag));
             Debug.WriteLine(string.Concat("Message: ", e.Body.ToString()));
             channelForEventing.BasicAck(e.DeliveryTag, false);
+        }
+        private static void ReceiveFanoutMessages()
+        {
+            ConnectionFactory connectionFactory = new ConnectionFactory();
+
+            connectionFactory.Port = 5672;
+            connectionFactory.HostName = "localhost";
+            connectionFactory.UserName = "guest";
+            connectionFactory.Password = "guest";
+            connectionFactory.VirtualHost = "accounting";
+
+            IConnection connection = connectionFactory.CreateConnection();
+            IModel channel = connection.CreateModel();
+            channel.BasicQos(0, 1, false);
+            EventingBasicConsumer eventingBasicConsumer = new EventingBasicConsumer(channel);
+
+            eventingBasicConsumer.Received += (sender, basicDeliveryEventArgs) =>
+            {
+                IBasicProperties basicProperties = basicDeliveryEventArgs.BasicProperties;
+
+                Debug.WriteLine(string.Concat("Message received from the exchange ", basicDeliveryEventArgs.Exchange));
+                Debug.WriteLine(string.Concat("Content type: ", basicProperties.ContentType));
+                Debug.WriteLine(string.Concat("Consumer tag: ", basicDeliveryEventArgs.ConsumerTag));
+                Debug.WriteLine(string.Concat("Delivery tag: ", basicDeliveryEventArgs.DeliveryTag));
+                string message = basicDeliveryEventArgs.Body.ToString();
+                Debug.WriteLine(string.Concat("Message: ", message));
+                Console.WriteLine(string.Concat("Message received by the accounting consumer: ", message));
+                channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
+            };
+
+            channel.BasicConsume("mycompany.queues.accounting", false, eventingBasicConsumer);
         }
     }
 }
