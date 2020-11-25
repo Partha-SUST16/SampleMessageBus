@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -9,7 +10,67 @@ namespace RabbitMqNetTests
     {
         static void Main(string[] args)
         {
-            RunRpcQueue();
+            RunScatterGatherQueue();
+            Console.ReadKey();
+        }
+        private static void RunScatterGatherQueue()
+        {
+            ConnectionFactory connectionFactory = new ConnectionFactory();
+
+            connectionFactory.Port = 5672;
+            connectionFactory.HostName = "localhost";
+            connectionFactory.UserName = "guest";
+            connectionFactory.Password = "guest";
+            connectionFactory.VirtualHost = "accounting";
+
+            IConnection connection = connectionFactory.CreateConnection();
+            IModel channel = connection.CreateModel();
+
+            channel.QueueDeclare("mycompany.queues.scattergather.a", true, false, false, null);
+            channel.QueueDeclare("mycompany.queues.scattergather.b", true, false, false, null);
+            channel.QueueDeclare("mycompany.queues.scattergather.c", true, false, false, null);
+            channel.ExchangeDeclare("mycompany.exchanges.scattergather", ExchangeType.Fanout, true, false, null);
+            channel.QueueBind("mycompany.queues.scattergather.a", "mycompany.exchanges.scattergather", "");
+            channel.QueueBind("mycompany.queues.scattergather.b", "mycompany.exchanges.scattergather", "");
+            channel.QueueBind("mycompany.queues.scattergather.c", "mycompany.exchanges.scattergather", "");
+            SendScatterGatherMessages(connection, channel, 3);
+        }
+
+        private static void SendScatterGatherMessages(IConnection connection, IModel channel, int minResponses)
+        {
+            List<string> responses = new List<string>();
+            string rpcResponseQueue = channel.QueueDeclare().QueueName;
+            string correlationId = Guid.NewGuid().ToString();
+
+            IBasicProperties basicProperties = channel.CreateBasicProperties();
+            basicProperties.ReplyTo = rpcResponseQueue;
+            basicProperties.CorrelationId = correlationId;
+            Console.WriteLine("Enter your message and press Enter.");
+
+            string message = Console.ReadLine();
+            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+            channel.BasicPublish("mycompany.exchanges.scattergather", "", basicProperties, messageBytes);
+
+            EventingBasicConsumer scatterGatherEventingBasicConsumer = new EventingBasicConsumer(channel);
+            scatterGatherEventingBasicConsumer.Received += (sender, basicDeliveryEventArgs) =>
+            {
+                IBasicProperties props = basicDeliveryEventArgs.BasicProperties;
+                channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
+                if (props != null
+                    && props.CorrelationId == correlationId)
+                {
+                    string response = (basicDeliveryEventArgs.Body.ToString());
+                    Console.WriteLine("Response: {0}", response);
+                    responses.Add(response);
+                    if (responses.Count >= minResponses)
+                    {
+                        Console.WriteLine(string.Concat("Responses received from consumers: ", string.Join(Environment.NewLine, responses)));
+                        channel.Close();
+                        connection.Close();
+                    }
+                }
+            };
+            channel.BasicConsume(rpcResponseQueue, false, scatterGatherEventingBasicConsumer);
         }
         private static void RunRpcQueue()
         {
