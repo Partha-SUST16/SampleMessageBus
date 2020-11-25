@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 namespace RabbitMqNetTests
 {
@@ -8,7 +9,60 @@ namespace RabbitMqNetTests
     {
         static void Main(string[] args)
         {
-            SetUpFanoutExchange();
+            RunRpcQueue();
+        }
+        private static void RunRpcQueue()
+        {
+            ConnectionFactory connectionFactory = new ConnectionFactory();
+
+            connectionFactory.Port = 5672;
+            connectionFactory.HostName = "localhost";
+            connectionFactory.UserName = "guest";
+            connectionFactory.Password = "guest";
+            connectionFactory.VirtualHost = "accounting";
+
+            IConnection connection = connectionFactory.CreateConnection();
+            IModel channel = connection.CreateModel();
+
+            channel.QueueDeclare("mycompany.queues.rpc", true, false, false, null);
+            SendRpcMessagesBackAndForth(channel);
+
+            channel.Close();
+            connection.Close();
+        }
+        private static void SendRpcMessagesBackAndForth(IModel channel)
+        {
+            string rpcResponseQueue = channel.QueueDeclare().QueueName;
+
+            string correlationId = Guid.NewGuid().ToString();
+            string responseFromConsumer = null;
+
+            IBasicProperties basicProperties = channel.CreateBasicProperties();
+            basicProperties.ReplyTo = rpcResponseQueue;
+            basicProperties.CorrelationId = correlationId;
+            Console.WriteLine("Enter your message and press Enter.");
+            string message = Console.ReadLine();
+            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+            channel.BasicPublish("", "mycompany.queues.rpc", basicProperties, messageBytes);
+
+            EventingBasicConsumer rpcEventingBasicConsumer = new EventingBasicConsumer(channel);
+            rpcEventingBasicConsumer.Received += (sender, basicDeliveryEventArgs) =>
+            {
+                IBasicProperties props = basicDeliveryEventArgs.BasicProperties;
+                if (props != null
+                    && props.CorrelationId == correlationId)
+                {
+                    string response = basicDeliveryEventArgs.Body.ToString();
+                    responseFromConsumer = response;
+                }
+                channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
+                Console.WriteLine("Response: {0}", responseFromConsumer);
+                Console.WriteLine("Enter your message and press Enter.");
+                message = Console.ReadLine();
+                messageBytes = Encoding.UTF8.GetBytes(message);
+                channel.BasicPublish("", "mycompany.queues.rpc", basicProperties, messageBytes);
+            };
+            channel.BasicConsume(rpcResponseQueue, false, rpcEventingBasicConsumer);
         }
         private static void SetUpFanoutExchange()
         {
