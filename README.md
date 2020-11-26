@@ -1,5 +1,5 @@
 # SampleMessageBus
-A sample chat application to see how `RabitMQ` message bus and `SignalR` works.<br>
+A sample chat application to see how `RabbitMQ` message bus and `SignalR` works.<br>
 
 ## Requirements ##
 
