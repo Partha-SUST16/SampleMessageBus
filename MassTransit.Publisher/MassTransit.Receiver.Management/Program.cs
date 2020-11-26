@@ -1,29 +1,30 @@
 ﻿using System;
 using MassTransit.RabbitMqTransport;
 
-namespace MassTransit.Receiver
+namespace MassTransit.Receiver.Management
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.Title = "This is the customer registration command receiver.";
-            Console.WriteLine("CUSTOMER REGISTRATION COMMAND RECEIVER.");
+            Console.Title = "Management consumer";
+            Console.WriteLine("MANAGEMENT");
             RunMassTransitReceiverWithRabbit();
         }
 
         private static void RunMassTransitReceiverWithRabbit()
         {
             IBusControl rabbitBusControl = Bus.Factory.CreateUsingRabbitMq(rabbit =>
-            {
+            { 
                 rabbit.Host(new Uri("rabbitmq://localhost:5672/accounting"), settings =>
                 {
                     settings.Password("guest");
                     settings.Username("guest");
                 });
-                rabbit.ReceiveEndpoint("mycompany.domains.queues", conf =>
+
+                rabbit.ReceiveEndpoint("mycompany.domains.queues.events.mgmt", conf =>
                 {
-                    conf.Consumer<RegisterCustomerConsumer>();
+                    conf.Consumer<CustomerRegisteredConsumerMgmt>();
                 });
             });
             rabbitBusControl.Start();

@@ -17,6 +17,15 @@ namespace MassTransit.Receiver
             Debug.WriteLine(newCustomer.Name);
             Debug.WriteLine(newCustomer.Id);
             Debug.WriteLine(newCustomer.Preferred);
+
+            context.Publish<ICustomerRegistered>(new
+            {
+                Address = newCustomer.Address,
+                Id = newCustomer.Id,
+                RegisteredUtc = newCustomer.RegisteredUtc,
+                Name = newCustomer.Name
+            });
+
             return Task.FromResult(context.Message);
         }
     }

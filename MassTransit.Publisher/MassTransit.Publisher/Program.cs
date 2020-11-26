@@ -8,6 +8,8 @@ namespace MassTransit.Publisher
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("CUSTOMER REGISTRATION COMMAND PUBLISHER");
+            Console.Title = "Publisher window";
             RunMassTransitPublisherWithRabbit();
         }
 
