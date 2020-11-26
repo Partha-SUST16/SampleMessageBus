@@ -1,5 +1,7 @@
 ﻿using System;
 using MassTransit.RabbitMqTransport;
+using MyCompany.Domains;
+using StructureMap;
 
 namespace MassTransit.Receiver
 {
@@ -14,6 +16,12 @@ namespace MassTransit.Receiver
 
         private static void RunMassTransitReceiverWithRabbit()
         {
+            var container = new Container(conf =>
+            {
+                conf.For<ICustomerRepository>().Use<CustomerRepository>();
+            });
+            string whatDoIHave = container.WhatDoIHave();
+
             IBusControl rabbitBusControl = Bus.Factory.CreateUsingRabbitMq(rabbit =>
             {
                 rabbit.Host(new Uri("rabbitmq://localhost:5672/accounting"), settings =>
@@ -21,11 +29,17 @@ namespace MassTransit.Receiver
                     settings.Password("guest");
                     settings.Username("guest");
                 });
-                rabbit.ReceiveEndpoint("mycompany.domains.queues", conf =>
+
+                rabbit.ReceiveEndpoint( "mycompany.domains.queues", conf =>
                 {
-                    conf.Consumer<RegisterCustomerConsumer>();
+                    conf.Consumer<RegisterCustomerConsumer>(container);
+                });
+                rabbit.ReceiveEndpoint( "mycompany.queues.errors.newcustomers", conf =>
+                {
+                    conf.Consumer<RegisterCustomerFaultConsumer>();
                 });
             });
+
             rabbitBusControl.Start();
             Console.ReadKey();
 

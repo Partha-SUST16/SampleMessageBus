@@ -3,12 +3,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using MyCompany.Domains;
 using MyCompany.Messaging;
 
 namespace MassTransit.Receiver
 {
     public class RegisterCustomerConsumer : IConsumer<IRegisterCustomer>
     {
+        private readonly ICustomerRepository _customerRepository;
+
+        public RegisterCustomerConsumer(ICustomerRepository customerRepository)
+        {
+            if (customerRepository == null) throw new ArgumentNullException("Customer repository");
+            _customerRepository = customerRepository;
+        }
         public Task Consume(ConsumeContext<IRegisterCustomer> context)
         {
             IRegisterCustomer newCustomer = context.Message;
@@ -18,6 +26,14 @@ namespace MassTransit.Receiver
             Debug.WriteLine(newCustomer.Id);
             Debug.WriteLine(newCustomer.Preferred);
 
+            _customerRepository.Save(new Customer(newCustomer.Id, newCustomer.Name, newCustomer.Address)
+            {
+                DefaultDiscount = newCustomer.DefaultDiscount,
+                Preferred = newCustomer.Preferred,
+                RegisteredUtc = newCustomer.RegisteredUtc,
+                Type = newCustomer.Type
+            });
+
             context.Publish<ICustomerRegistered>(new
             {
                 Address = newCustomer.Address,
@@ -25,6 +41,7 @@ namespace MassTransit.Receiver
                 RegisteredUtc = newCustomer.RegisteredUtc,
                 Name = newCustomer.Name
             });
+
 
             return Task.FromResult(context.Message);
         }

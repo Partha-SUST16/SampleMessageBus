@@ -40,6 +40,18 @@ namespace MassTransit.Publisher
                 Type = 1,
                 DefaultDiscount = 0
             });
+            //Un comment in case of deal with failures 
+           /* Task sendErrorTask = sendEndpoint.Send<IRegisterCustomer>(new
+            {
+                Address = "New Street",
+                Id = Guid.NewGuid(),
+                Preferred = true,
+                RegisteredUtc = DateTime.UtcNow,
+                Name = "Nice people LTD",
+                Type = 1,
+                DefaultDiscount = 0
+            }, c => c.FaultAddress = new Uri("rabbitmq://localhost:5672/accounting/mycompany.queues.errors.newcustomers"));
+           */
             Console.ReadKey();
         }
     }

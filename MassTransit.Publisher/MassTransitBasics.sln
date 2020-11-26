@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.Receiver.Manage
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.Receiver.Sales", "MassTransit.Receiver.Sales\MassTransit.Receiver.Sales.csproj", "{5615C9D7-52BF-47A9-98B8-411A8F23C117}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCompany.Domains", "MyCompany.Domains\MyCompany.Domains.csproj", "{E6729297-9950-4957-84F8-FC69ED472994}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{5615C9D7-52BF-47A9-98B8-411A8F23C117}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5615C9D7-52BF-47A9-98B8-411A8F23C117}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5615C9D7-52BF-47A9-98B8-411A8F23C117}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6729297-9950-4957-84F8-FC69ED472994}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6729297-9950-4957-84F8-FC69ED472994}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6729297-9950-4957-84F8-FC69ED472994}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6729297-9950-4957-84F8-FC69ED472994}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
