@@ -1,11 +1,11 @@
 # SampleMessageBus
-A sample chat application to see how `RabbitMQ` message bus and `SignalR` works.<br>
+Sample applications to see how `RabbitMQ` message bus , `Mass Transit` and `SignalR` works.<br>
 
 ## Requirements ##
 
 A message broker. This sample provides a docker-compose.yml which uses RabbitMq (broker) and MsSql (db). If you have rabbitMq locally installed, you can skip the first step.
 
-## Easy Steps ##
+## Easy Steps For SignalRChat ##
 
 1. in the directory with the docker-compose.yml run the command `docker-compose up -d`
 2. After complete, give it a few seconds, and you can browse to  http://localhost:15672, and view the rabbitmq management console
@@ -19,3 +19,9 @@ A message broker. This sample provides a docker-compose.yml which uses RabbitMq 
 
 ScreenShot : <br>
 <img src="./Sample.png">
+
+## For MassTransit ##
+
+1. Open `MassTransitBasics.sln` 
+2. First run `MassTransit.Receiver`  to register the consumer then run `MassTransit.Publisher` to publish message to RabbitMq.
+ For more info visit https://dotnetcodr.com/messaging/
