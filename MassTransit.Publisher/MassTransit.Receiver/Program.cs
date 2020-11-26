@@ -41,8 +41,10 @@ namespace MassTransit.Receiver
                     conf.Consumer<RegisterCustomerFaultConsumer>();
                 });
             });
-
+           // rabbitBusControl.ConnectSendObserver(new SendObjectObserver());
             rabbitBusControl.Start();
+            //rabbitBusControl.ConnectReceiveObserver(new MessageReceiveObserver());
+            rabbitBusControl.ConnectConsumeObserver(new MessageConsumeObserver());
             Console.ReadKey();
 
             rabbitBusControl.Stop();
