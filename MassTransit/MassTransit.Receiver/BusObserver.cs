@@ -39,6 +39,11 @@ namespace MassTransit.Receiver
             await Task.FromResult(0);
         }
 
+        public Task PostStart(IBus bus, Task<BusReady> busReady)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task PreStop(IBus bus)
         {
             Console.WriteLine(string.Concat(_logger, ": Bus is about to stop with address ", bus.Address));
