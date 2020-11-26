@@ -33,6 +33,8 @@ namespace MassTransit.Receiver
                 rabbit.ReceiveEndpoint( "mycompany.domains.queues", conf =>
                 {
                     conf.Consumer<RegisterCustomerConsumer>(container);
+                    conf.Consumer<RegisterCustomerConsumer>(container);
+                    conf.Consumer<RegisterDomainConsumer>();
                 });
                 rabbit.ReceiveEndpoint( "mycompany.queues.errors.newcustomers", conf =>
                 {

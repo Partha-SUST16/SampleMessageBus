@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MyCompany.Messaging
 {
-    public interface IRegisterCustomer
+    public interface IRegisterCustomer : IRegisterDomain
     {
         Guid Id { get; }
         DateTime RegisteredUtc { get; }

@@ -38,7 +38,9 @@ namespace MassTransit.Publisher
                 RegisteredUtc = DateTime.UtcNow,
                 Name = "Nice people LTD",
                 Type = 1,
-                DefaultDiscount = 0
+                DefaultDiscount = 0,
+                Target = "Customers",
+                Importance = 1
             });
             //Un comment in case of deal with failures 
            /* Task sendErrorTask = sendEndpoint.Send<IRegisterCustomer>(new
