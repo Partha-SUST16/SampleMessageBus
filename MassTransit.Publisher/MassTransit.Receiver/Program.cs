@@ -1,5 +1,6 @@
 ﻿using System;
 using MassTransit.RabbitMqTransport;
+using MassTransit.Testing;
 using MyCompany.Domains;
 using StructureMap;
 
@@ -29,7 +30,7 @@ namespace MassTransit.Receiver
                     settings.Password("guest");
                     settings.Username("guest");
                 });
-
+                
                 rabbit.ReceiveEndpoint( "mycompany.domains.queues", conf =>
                 {
                     conf.Consumer<RegisterCustomerConsumer>(container);
@@ -41,6 +42,7 @@ namespace MassTransit.Receiver
                     conf.Consumer<RegisterCustomerFaultConsumer>();
                 });
             });
+           
            // rabbitBusControl.ConnectSendObserver(new SendObjectObserver());
             rabbitBusControl.Start();
             //rabbitBusControl.ConnectReceiveObserver(new MessageReceiveObserver());
